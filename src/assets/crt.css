@@ -1,0 +1,499 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Press+Start+2P&display=swap');
+
+/* Vars & Globals */
+:root {
+  --green: #00ff88;
+  --orange: #ffa500;
+  --red: #ff0033;
+  --white: #ffffff;
+  --bg: #000;
+  --tw-shadow-base: 0 0 2px #005533, 0 0 4px rgba(0, 255, 180, 0.6),
+    0 0 6px rgba(0, 255, 180, 0.3);
+  --tw-shadow-orange: 0 0 1px #995500, 0 0 3px rgba(255, 165, 0, 0.5);
+  --tw-shadow-red: 0 0 1px #770000, 0 0 3px rgba(255, 0, 64, 0.5);
+  --sp-sm: 0.25em;
+  --sp-md: 1em;
+  --sp-lg: 2em 2em;
+  --font-ui: 'Fira Code', monospace;
+  --font-crt: 'Press Start 2P', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background-color: var(--bg);
+  color: var(--green);
+}
+
+.main-text,
+.terminal-footer {
+  text-shadow: var(--tw-shadow-base);
+}
+
+/* Common utilities */
+/* GLOW + BLOOM utility */
+.glow {
+  text-shadow: var(--tw-shadow-base);
+}
+.glow--orange {
+  text-shadow: var(--tw-shadow-orange);
+}
+.glow--red {
+  text-shadow: var(--tw-shadow-red);
+}
+
+/* ——— BUTTON RESET & BASE ——— */
+.btn {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  padding: var(--sp-sm) var(--sp-md);
+  border: 1px solid currentColor;
+  background: transparent;
+  color: currentColor;
+  text-shadow: var(--tw-shadow-base);
+  box-shadow: inset 0 0 3px rgba(0, 255, 136, 0.2),
+    0 0 8px rgba(0, 255, 136, 0.4);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  text-transform: uppercase;
+}
+
+/* ——— GREEN VARIANT ——— */
+.btn--green {
+  color: var(--green);
+}
+.btn--green:hover {
+  background: var(--green);
+  color: var(--bg);
+  box-shadow: inset 0 0 6px rgba(0, 255, 136, 0.6),
+    0 0 12px rgba(0, 255, 136, 0.7);
+}
+
+/* ——— ASCII NAV BUTTON VARIANT ——— */
+.btn.ascii {
+  border: none;
+  box-shadow: none;
+  background: none;
+  padding: 0.25em 0.15em;
+  margin: 0 0;
+  color: var(--green);
+  text-shadow: var(--tw-shadow-base);
+  cursor: pointer;
+}
+
+.btn.ascii:hover {
+  background-color: var(--green);
+  color: var(--bg);
+}
+
+/* ——— DEBUG VARIANT ——— */
+.btn--debug {
+  color: var(--white);
+  border-color: var(--white);
+}
+.btn--debug:hover {
+  background: var(--white);
+  color: var(--bg);
+}
+
+/* Special components */
+.crt-header,
+.crt-title,
+.crt-subhead,
+.terminal-footer {
+  font-family: var(--font-crt);
+}
+
+.crt-wrapper {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: var(--sp-lg) var(--sp-md);
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  transform: perspective(800px) rotateX(0.5deg);
+  box-shadow: inset 0 0 25px rgba(0, 255, 136, 0.2),
+    0 0 25px rgba(0, 255, 136, 0.4);
+  background-color: rgba(0, 0, 0, 0.96);
+  filter: brightness(1.1) contrast(1.15);
+}
+
+.crt-glass {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 136, 0.15) 0px,
+    rgba(0, 255, 136, 0.15) 2px,
+    transparent 1px,
+    transparent 3px
+  );
+
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.7) 20%,
+    rgba(0, 0, 0, 0) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.7) 20%,
+    rgba(0, 0, 0, 0) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.bloom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 255, 136, 0.2),
+    transparent 70%
+  );
+  filter: blur(4px);
+  opacity: 0.3;
+  z-index: 999;
+}
+
+/* ------------------------------------
+   CRT-Style Header (Press Start 2P)
+   ------------------------------------ */
+.crt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0 5px 0;
+  margin-bottom: 20px;
+  border-top: 1px solid var(--green);
+  border-bottom: 1px solid var(--green);
+  font-size: 0.85em;
+  letter-spacing: 0.05em;
+  /* glow */
+  text-shadow: 0 0 2px var(--green), 0 0 4px var(--green);
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+}
+
+.header-item {
+  /* small spacing between items */
+  margin: 0 0.5ch;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+}
+
+.label-full {
+  display: inline;
+}
+.label-short {
+  display: none;
+}
+
+h1.crt-title {
+  text-align: center;
+  font-size: 1.1em;
+  margin: 10px 0;
+  padding-bottom: 0px;
+  text-shadow: 0 0 2px #005533, 0 0 4px rgba(0, 255, 180, 0.6),
+    0 0 6px rgba(0, 255, 180, 0.3);
+}
+h2.crt-subhead {
+  text-align: center;
+  font-size: 1.1em;
+  padding: 10px 0;
+  margin: 20px 0 20px 0;
+  border-top: 1px solid var(--green);
+  border-bottom: 1px solid var(--green);
+  text-shadow: 0 0 2px #005533, 0 0 4px rgba(0, 255, 180, 0.6),
+    0 0 6px rgba(0, 255, 180, 0.3);
+}
+
+.main-text {
+  color: var(--green);
+  text-shadow: 0 0 2px #005533, 0 0 4px rgba(0, 255, 180, 0.6),
+    0 0 6px rgba(0, 255, 180, 0.3);
+  line-height: 1.25;
+}
+
+.question-block {
+  margin: 20px 0;
+  font-size: 0.8em;
+}
+
+.question-block em {
+  display: block;
+  margin: 10px 0;
+}
+
+.choices label {
+  display: block;
+  margin: 6px 0;
+}
+
+.btn-container {
+  display: flex;
+  gap: 2ch;
+  margin-left: 0ch;
+}
+
+/* Match main-text styling */
+.warning.typewriter {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  overflow: visible; /* allow glow to render */
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+.typewriter-line {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Typewriter animation */
+.typewriter-text {
+  display: inline-block;
+  white-space: nowrap;
+  /* let the JS utility drive the reveal—no CSS clipping/animation: */
+  max-width: none !important;
+  overflow: visible !important;
+  animation: none !important;
+}
+/* Blinking cursor */
+.cursor {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 1em;
+  animation: blink 1s step-end infinite;
+  line-height: 1;
+  transform: translateY(-0.1em);
+  font-size: 0.8em;
+}
+
+/* default typewriter color = green */
+.typewriter {
+  --tw-color: var(--green);
+  --tw-shadow: var(--tw-shadow-base);
+}
+
+/* utility classes to override */
+.typewriter.orange {
+  --tw-color: var(--orange);
+  --tw-shadow: var(--tw-shadow-orange);
+}
+.typewriter.red {
+  --tw-color: var(--red);
+  --tw-shadow: var(--tw-shadow-red);
+}
+.typewriter.white {
+  --tw-color: var(--white);
+  --tw-shadow: var(--tw-shadow-base);
+}
+
+/* apply that variable to both text & cursor */
+.typewriter .typewriter-text,
+.typewriter .cursor {
+  color: var(--tw-color);
+  text-shadow: var(--tw-shadow);
+}
+
+/* Keyframes */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.terminal-footer {
+  font-size: 1em;
+  color: var(--green);
+  text-align: center;
+  border-top: 1px solid var(--green);
+  padding: 16px 0 8px;
+  margin-top: 40px;
+  text-shadow: 0 0 2px #005533, 0 0 4px rgba(0, 255, 180, 0.6),
+    0 0 6px rgba(0, 255, 180, 0.3);
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 2px #005533, 0 0 3px rgba(0, 255, 180, 0.6),
+      0 0 4px rgba(0, 255, 180, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 6px #00ac67, 0 0 10px rgba(0, 255, 180, 0.6),
+      0 0 15px rgba(0, 255, 180, 0.3);
+  }
+}
+
+.pulse {
+  animation: softPulse 3.5s ease-in-out infinite;
+}
+
+/* Status color utilities */
+.status-white {
+  color: var(--white);
+  text-shadow: 0 0 3px var(--white), /* core */ 0 0 5px rgba(0, 255, 180, 0.45),
+    /* inner fringe (+1 px, +.10 α) */ 0 0 11px rgba(0, 255, 180, 0.55);
+}
+
+.status-green {
+  color: var(--green);
+  text-shadow: 0 0 3px var(--green), 0 0 5px rgba(0, 255, 136, 0.55),
+    0 0 11px rgba(0, 255, 136, 0.55);
+}
+
+.status-orange {
+  color: var(--orange);
+  text-shadow: 0 0 3px var(--orange), 0 0 5px rgba(255, 165, 0, 0.55),
+    0 0 11px rgba(255, 165, 0, 0.4);
+}
+
+.status-red {
+  color: var(--red);
+  text-shadow: 0 0 3px var(--red), 0 0 5px rgba(255, 0, 64, 0.6),
+    0 0 11px rgba(255, 0, 64, 0.35);
+}
+
+/* Base reset for the list */
+.minigame-list {
+  list-style: none;
+  padding: 0;
+  margin: 1em 0;
+}
+.minigame-list li {
+  margin: 0.5em 0;
+}
+
+/* DEBUG AREA */
+#debug-area {
+  max-width: 800px;
+  margin: 1rem auto;
+  display: flex;
+  gap: 1ch;
+  justify-content: center;
+  font-size: 0.75em;
+  color: var(--white);
+  text-shadow: 0 0 1px var(--white), 0 0 2px var(--white);
+}
+
+/* A little pill-toggle in your header */
+.btn-debug-toggle {
+  --w: 2.4em;
+  --h: 1.2em;
+  --knob: 1em;
+
+  display: inline-block;
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  background: var(--green);
+  border: 1px solid var(--green);
+  border-radius: var(--h);
+  cursor: pointer;
+  margin-left: 1ch;
+  vertical-align: middle;
+  padding: 0;
+  overflow: visible; /* let the knob peek out if needed */
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* OFF state = pill is empty */
+.btn-debug-toggle.off {
+  background: transparent;
+  border-color: var(--green);
+}
+
+/* the circular knob */
+.btn-debug-toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0.1em; /* inset from left when ON */
+  width: var(--knob);
+  height: var(--knob);
+  background: var(--bg);
+  border: 1px solid var(--green);
+  border-radius: 50%;
+  transform: translateY(-50%); /* vertical center */
+  transition: left 0.2s, right 0.2s;
+}
+
+/* OFF state = knob hugs the right edge */
+.btn-debug-toggle.off::after {
+  left: auto; /* turn off the left inset */
+  right: 0.1em; /* inset from right instead */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .label-full {
+    display: none;
+  }
+  .label-short {
+    display: inline;
+  }
+  .header-controls {
+    gap: 0.5ch;
+  }
+  .crt-header .header-item,
+  h1.crt-title,
+  h2.crt-subhead,
+  .terminal-footer {
+    font-size: 0.8em;
+  }
+  .crt-subhead {
+    padding: 6px 0;
+  }
+  .terminal-footer {
+    padding: 12px 0 6px;
+  }
+}
