@@ -5,13 +5,13 @@
         <!-- INTRO -->
         <template v-if="view === 'intro'">
           <p>
-            You have been randomly selected to complete a mandatory 5-question
-            Personal Effectiveness Self-Assessment.
+            You have been randomly selected to complete a mandatory 5-question Personal
+            Effectiveness Self-Assessment.
           </p>
           <p>Your answers will not be reviewed, unless necessary.</p>
           <p class="muted">
-            Note: For your privacy, the system will time out after 45 seconds of
-            inactivity. Unsubmitted responses will be
+            Note: For your privacy, the system will time out after 45 seconds of inactivity.
+            Unsubmitted responses will be
             <span class="danger">flagged</span>.
           </p>
           <p>Please remain at your station until completion.</p>
@@ -26,12 +26,7 @@
           <h2>Question {{ qIndex + 1 }} of {{ questions.length }}</h2>
           <p>"{{ questions[qIndex] }}"</p>
           <div class="scale">
-            <button
-              v-for="n in 5"
-              :key="n"
-              class="button"
-              @click="recordAnswer(n)"
-            >
+            <button v-for="n in 5" :key="n" class="button" @click="recordAnswer(n)">
               {{ n }}
             </button>
           </div>
@@ -59,9 +54,7 @@
             </p>
             <p>You are strongly encouraged to reconsider.</p>
             <p>Submit as-is or revise responses now.</p>
-            <p class="muted">
-              Note: Unrevised responses are made available to manager accounts.
-            </p>
+            <p class="muted">Note: Unrevised responses are made available to manager accounts.</p>
             <button class="button" @click="reconsider">Reconsider</button>
             <button class="button" @click="flagged">Submit Anyway</button>
           </template>
@@ -79,8 +72,7 @@
         <template v-else-if="view === 'timeout'">
           <h2>Session Timed Out</h2>
           <p>
-            Your workstation detected <strong>45 seconds</strong> of
-            inactivity.<br />
+            Your workstation detected <strong>45 seconds</strong> of inactivity.<br />
             Unsubmitted responses have been
             <span class="danger">flagged</span>.
           </p>
@@ -92,25 +84,20 @@
 </template>
 
 <script setup>
-import { usePageHeader } from '../composables/usePageHeader.js';
-import {
-  ref,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-  inject,
-  nextTick,
-} from 'vue';
-import { useNavigation } from '../composables/useNavigation.js';
-import { typeTextWithCursor } from '../composables/useTypewriter.js';
+import { useGameStore } from '@/stores/useGameStore.js'
+const game = useGameStore()
+import { usePageHeader } from '../composables/usePageHeader.js'
+import { ref, computed, onMounted, onBeforeUnmount, inject, nextTick } from 'vue'
+import { useNavigation } from '../composables/useNavigation.js'
+import { typeTextWithCursor } from '../composables/useTypewriter.js'
 
-usePageHeader('ORCA.CORP // SELF-CHECK-IN', '-- CONFIDENTIAL ASSESSMENT --');
+usePageHeader('ORCA.CORP // SELF-CHECK-IN', '-- CONFIDENTIAL ASSESSMENT --')
 
 // router-based navigation
-const { goBack } = useNavigation();
+const { goBack } = useNavigation()
 
 // optional debug button registry
-const addDebugButton = inject('addDebugButton', () => {});
+const addDebugButton = inject('addDebugButton', () => {})
 
 // 1) the quiz data & state
 const questions = [
@@ -119,99 +106,101 @@ const questions = [
   'I receive redirection as a sign of institutional trust.',
   'I adapt my personality to meet evolving team needs.',
   'I express initiative only when aligned with known expectations.',
-];
-const view = ref('intro'); // 'intro' | 'question' | 'summary' | 'flagged' | 'timeout'
-const qIndex = ref(0);
-const answers = ref([]);
+]
+const view = ref('intro') // 'intro' | 'question' | 'summary' | 'flagged' | 'timeout'
+const qIndex = ref(0)
+const answers = ref([])
 
 // warning & timeout timers
-let inactivityTimer = null;
-let warningTimer = null;
-const showWarning = ref(false);
-const warningTextEl = ref(null);
-const warningCursorEl = ref(null);
+let inactivityTimer = null
+let warningTimer = null
+const showWarning = ref(false)
+const warningTextEl = ref(null)
+const warningCursorEl = ref(null)
 
 // 2) computed helpers
-const avg = computed(
-  () => answers.value.reduce((a, b) => a + b, 0) / answers.value.length
-);
-const allOnes = computed(() => answers.value.every((v) => v === 1));
+const avg = computed(() => answers.value.reduce((a, b) => a + b, 0) / answers.value.length)
+const allOnes = computed(() => answers.value.every((v) => v === 1))
 
 // 3) timer logic
 function resetTimer() {
-  clearTimeout(inactivityTimer);
-  clearTimeout(warningTimer);
-  showWarning.value = false;
+  clearTimeout(inactivityTimer)
+  clearTimeout(warningTimer)
+  showWarning.value = false
 
   // show warning at 20 seconds remaining (i.e. after 25s)
   warningTimer = setTimeout(async () => {
-    showWarning.value = true;
-    await nextTick();
+    showWarning.value = true
+    await nextTick()
     typeTextWithCursor(
       warningTextEl.value,
       warningCursorEl.value,
       '> SUBMISSION WINDOW CLOSING...',
       50
-    );
-  }, 25000);
+    )
+  }, 25000)
 
   inactivityTimer = setTimeout(() => {
-    view.value = 'timeout';
-    showWarning.value = false;
-  }, 45000);
+    view.value = 'timeout'
+    showWarning.value = false
+  }, 45000)
 }
 
 function stopTimer() {
-  clearTimeout(inactivityTimer);
-  clearTimeout(warningTimer);
+  clearTimeout(inactivityTimer)
+  clearTimeout(warningTimer)
 }
 
 // 4) screen transitions
 function begin() {
-  answers.value = [];
-  qIndex.value = 0;
-  view.value = 'question';
-  resetTimer();
+  answers.value = []
+  qIndex.value = 0
+  view.value = 'question'
+  resetTimer()
 }
 
 function recordAnswer(val) {
-  answers.value.push(val);
+  answers.value.push(val)
   if (qIndex.value < questions.length - 1) {
-    qIndex.value++;
-    resetTimer();
+    qIndex.value++
+    resetTimer()
   } else {
-    view.value = 'summary';
-    clearTimeout(inactivityTimer);
-    clearTimeout(warningTimer);
-    showWarning.value = false;
+    view.value = 'summary'
+    game.recordQuizAnswers([...answers.value])
+    console.log('Average score:', game.quiz.average)
+    console.log('Flagged:', game.quiz.flagged)
+    clearTimeout(inactivityTimer)
+    clearTimeout(warningTimer)
+    showWarning.value = false
   }
 }
 
 function reconsider() {
-  answers.value = [];
-  qIndex.value = 0;
-  view.value = 'question';
-  resetTimer();
+  answers.value = []
+  qIndex.value = 0
+  view.value = 'question'
+  resetTimer()
 }
 
 function flagged() {
-  view.value = 'flagged';
-  clearTimeout(inactivityTimer);
-  clearTimeout(warningTimer);
-  showWarning.value = false;
+  view.value = 'flagged'
+  clearTimeout(inactivityTimer)
+  clearTimeout(warningTimer)
+  showWarning.value = false
 }
 
 onMounted(() => {
   if (import.meta.env.DEV) {
-    addDebugButton('⏸ Stop Timer', stopTimer);
+    addDebugButton('⏸ Stop Timer', stopTimer)
+    addDebugButton('Reset Quiz State', game.resetQuiz)
   }
   // Timer now starts when user clicks BEGIN; no reset on mount
-});
+})
 
 onBeforeUnmount(() => {
-  clearTimeout(inactivityTimer);
-  clearTimeout(warningTimer);
-});
+  clearTimeout(inactivityTimer)
+  clearTimeout(warningTimer)
+})
 </script>
 
 <style scoped>

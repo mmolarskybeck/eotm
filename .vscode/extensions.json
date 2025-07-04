@@ -1,3 +1,14 @@
+// .vscode/extensions.json
 {
-  "recommendations": ["Vue.volar"]
+  "recommendations": [
+    "Vue.volar",                              // Vue 3 + <script setup> support
+    "eamodio.gitlens",                        // Git blame / history / code authorship
+    "GitHub.vscode-pull-request-github",      // Review PRs & issues in-editor
+    "sdras.vue-vscode-snippets",              // Vue 3 snippet library
+    "esbenp.prettier-vscode",                 // Opinionated code formatting
+    "dbaeumer.vscode-eslint",                 // JavaScript/TypeScript linting
+    "christian-kohler.path-intellisense",     // Autocomplete file paths
+    "christian-kohler.npm-intellisense",      // Autocomplete module imports
+    "bemisguided.vscode-ink-language-tools"   // Ink.js real-time compile & diagnostics
+  ]
 }

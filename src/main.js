@@ -1,11 +1,19 @@
 // src/main.js
-import { createApp } from 'vue';
-import App from './App.vue';
-import { router } from './router';
+import { createApp } from 'vue'
+import App from './App.vue'
+import { router } from './router'
 
-// pull in your CRT stylesheet once, globally:
-import './assets/crt.css';
+import './assets/crt.css'
 
-createApp(App)
-  .use(router) // ← tell Vue about the router
-  .mount('#app');
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
+const app = createApp(App)
+
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+
+app.use(pinia)
+app.use(router)
+
+app.mount('#app')
