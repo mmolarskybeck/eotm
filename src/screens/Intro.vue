@@ -12,10 +12,10 @@
 
     <ul class="minigame-list">
       <li>
-        <button class="action-primary" @click="goTo('powerHour')">Productivity Power Hour</button>
+        <button class="ascii btn" @click="goTo('powerHour')">[ Productivity Power Hour ]</button>
       </li>
       <li>
-        <button class="action-primary" @click="goTo('quiz')">Self-Assessment Quiz</button>
+        <button class="ascii btn" @click="goTo('quiz')">[ Self-Check-In ]</button>
       </li>
     </ul>
   </div>
