@@ -1,81 +1,97 @@
 # Core Architecture & Development Rules
-**Objective:** This document contains the essential technical rules for AI agents contributing to Employee of the Month. Adhering to these principles ensures all code is consistent, maintainable, and aligned with the project's core architecture.
 
-**The Golden Rule:** Decouple Minigames from the Engine
-The single most important principle of this architecture is separation of concerns.
+> **Non-negotiable guidelines** for all code contributions—especially AI agents—ensuring consistency, maintainability, and performance.
 
-**Minigames** are responsible for UI and capturing player actions. They emit events with raw data.
+---
 
-The **Central Store** (`useGameStore`) is responsible for all logic. It listens for events and is solely responsible for updating traits, calculating profiles, and managing state.
+### 1. The Golden Rule: Decouple Minigames from the Engine
 
-A minigame must NEVER directly modify player traits or profiles. It only reports what happened.
+* **Minigames** (Vue components) handle UI and capture player actions.
+* **Tracking Engine** (Pinia store + reducer) handles all logic: updating traits, calculating profiles, setting flags.
+* **Minigames must never** modify traits or profiles directly; they only call `trackBehavior(event, data)`.
 
-## Architecture & Key Patterns
-**Vue 3:** All components must use `<script setup>` and the Composition API.
+---
 
-**State Management:** All shared state must live in the Pinia store (`src/stores/useGameStore.js`).
+### 2. Architecture & Key Patterns
 
-**Event-Driven Logic:** All behavioral tracking must go through the central trackBehavior action in the store. This is the only valid way to report player actions.
+* **Vue 3 + Composition API**: Use `<script setup>` everywhere.
+* **State Management**: All shared state lives in Pinia stores under `src/stores/`.
+* **Behavior Tracking**:
 
-```
-// CORRECT USAGE
-import { useGameStore } from '@/stores/useGameStore';
-import { BehaviorEvent } from '@/core/events'; // Import from the central ENUM file
+  1. **Import** the composable: `const { trackBehavior } = useBehaviorTracking(minigameId)`.
+  2. **Emit** events with raw data: `trackBehavior(BehaviorEvent.CHOICE_MADE, { choiceId, durationMs, compliant })`.
+  3. **No direct** calls to `adjustTrait` or similar in components.
+* **Central ENUM**: `src/core/behaviorEvents.js` exports `BehaviorEvent`—use only these constants.
+* **Shared Composables**:
 
-const game = useGameStore();
+  * `usePageHeader()` for CRT titles
+  * `useNavigation()` for routing
+  * `useCoSy()` for commentary triggers
+  * `useBehaviorTracking()` for event API
+  * `useDebug()` for dev-only controls
 
-function handlePlayerChoice(choiceData) {
-  // Emit a standardized event with a raw data payload.
-  game.trackBehavior(BehaviorEvent.CHOICE_MADE, {
-    choiceId: choiceData.id,
-    duration: 2150,
-    compliant: false
-  });
+---
+
+### 3. System Vocabulary: `BehaviorEvent` Enum
+
+> **Single source of truth**—no magic strings.
+
+```js
+// src/core/behaviorEvents.js
+export const BehaviorEvent = {
+  TASK_COMPLETE:       'TASK_COMPLETE',
+  TASK_ABANDON:        'TASK_ABANDON',
+  CHOICE_MADE:         'CHOICE_MADE',
+  REVISION:            'REVISION',
+  TIMEOUT:             'TIMEOUT',
+  EXPLORATION_ATTEMPT: 'EXPLORATION_ATTEMPT',
+  RAPID_MULTI_CLICK:   'RAPID_MULTI_CLICK',  // new stress indicator
+  // ...add only with documented justification
 }
 ```
-Shared Functionality: Use existing composables for cross-cutting concerns:
 
-`usePageHeader()`: To set the main CRT screen title.
+---
 
-`useNavigation()`: For all routing changes.
+### 4. Technical Constraints & Governance
 
-`useCoSy()`: To request and display commentary.
+* **Web-first & offline-capable**: Core features never require a network; GPT calls are optional.
+* **Performance**: Batch event processing (e.g. every 100 ms), persist < 1 KB of summary data, lazy profile calculations.
+* **Persistence**: Pinia-persist only for profile object (`traits`, `type`, `confidence`) and `behaviorHistory` (sliding window of last 20 events).
+* **Adding events**: New entries in `BehaviorEvent` must include a one-sentence rationale and a reducer mapping.
 
+---
 
-## The System's Vocabulary: Core Behavior Events
-Only use event types defined in the central BehaviorEvent enum. Do not use "magic strings." The AI must know and use this locked vocabulary.
+### 5. Standard Procedure: Adding a New Minigame
 
-```
-// src/core/events.js (The Single Source of Truth)
-export const BehaviorEvent = {
-  TASK_COMPLETE: 'TASK_COMPLETE',       // Player successfully finished a module
-  TASK_ABANDON: 'TASK_ABANDON',         // Player exited a module prematurely
-  CHOICE_MADE: 'CHOICE_MADE',           // Player made a significant choice
-  REVISION: 'REVISION',                 // Player went back to change an answer
-  TIMEOUT: 'TIMEOUT',                   // A timer expired due to inactivity
-  EXPLORATION_ATTEMPT: 'EXPLORATION_ATTEMPT'  // Player tried to access a restricted area
-};
-```
+1. **Create** `/src/minigames/YourGame.vue` using `<script setup>`.
+2. **Import**:
 
-## Technical Constraints & Governance
-**Web-First & Offline Capable**: All features must function without a network connection. API calls (like for GPT) are enhancements, not core requirements.
+   ```js
+   import { useBehaviorTracking } from '@/composables/useBehaviorTracking'
+   import { BehaviorEvent } from '@/core/behaviorEvents'
+   ```
+3. **Setup**:
 
-**Performance**: Code should be mindful of performance. Behavioral timing is critical, so avoid blocking the main thread. Event processing is batched.
+   ```js
+   const { trackBehavior } = useBehaviorTracking('yourGameId')
+   ```
+4. **Emit events** at decision points:
 
-**Adding New Events**: To add a new event to the BehaviorEvent enum, you must provide justification for why the existing events are insufficient to capture the new behavioral dimension.
+   ```js
+   trackBehavior(BehaviorEvent.CHOICE_MADE, { choiceId, durationMs })
+   ```
+5. **Add route** in `src/router/index.js`.
+6. **Integrate debug**:
 
-## Standard Procedure: Adding a New Minigame
-Follow these steps precisely:
+   ```js
+   if (import.meta.env.DEV) addDebugButton('⏸ Pause', pauseGame)
+   ```
+7. **Test**: verify events appear in the debug overlay and drive profile shifts.
 
-**Create the View Component**: Build the minigame UI inside a single Vue component in `/src/minigames/`.
+---
 
-**Integrate Core Hooks**: Use usePageHeader() and import the useGameStore.
+### 6. Final Mandate for AI Agents
 
-**Implement trackBehavior Calls**: Add trackBehavior() calls at all key decision points, using the official BehaviorEvent enums.
-
-**Add Route**: Add the new minigame to the Vue Router configuration in /src/router/index.js.
-
-**Implement Debug Tools**: In development mode (import.meta.env.DEV), use the injected addDebugButton function to add controls for skipping or manipulating your minigame's state.
-
-## Final Mandate for AI Agents
-Your primary goal is to write code that adheres to the decoupled event-driven architecture. When asked to add a feature to a minigame, your implementation must only involve emitting pre-defined events with raw context. You are not to implement any logic that directly calculates or modifies the player's psychological profile from within a minigame component.
+> **Your only role in minigame code is to report—never to decide.**
+> When implementing features, you **must** use `trackBehavior()` with the locked enums.
+> All trait math, profile logic, and flag detection live in the central engine.

@@ -12,10 +12,13 @@
 
     <ul class="minigame-list">
       <li>
-        <button class="action-primary" @click="goTo('powerHour')">Productivity Power Hour</button>
+        <button class="btn ascii" @click="goTo('powerHour')">[ Productivity Power Hour ]</button>
       </li>
       <li>
-        <button class="action-primary" @click="goTo('quiz')">Self-Assessment Quiz</button>
+        <button class="btn ascii" @click="goTo('quiz')">[ Self-Assessment Quiz ]</button>
+      </li>
+      <li>
+        <button class="btn ascii" @click="goTo('tabDiscipline')">[ Tab Discipline ]</button>
       </li>
     </ul>
   </div>
@@ -24,10 +27,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { typeTextWithCursor } from '../composables/useTypewriter.js'
+import { typeTextWithCursor } from '@/composables/useTypewriter.js'
 
 // ← 1) import & call this before anything else:
-import { usePageHeader } from '../composables/usePageHeader.js'
+import { usePageHeader } from '@/composables/usePageHeader.js'
 usePageHeader('ORCA.CORP // COACHING PORTAL', '-- ONBOARDING START --')
 
 // navigation helper

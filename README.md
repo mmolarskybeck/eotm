@@ -58,9 +58,6 @@ npm run dev
 
 ### Development Guides
 - **`devnotes/minigame-architecture.md`** - How to build minigames (study Quiz.vue)
-- **`devnotes/behavioral-systems.md`** - Implementing player profiling
-- **`devnotes/api-integration.md`** - GPT integration and narrative systems
-- **`devnotes/vue-migration.md`** - Converting standalone JS to Vue
 
 ## 🔧 Technical Architecture
 
