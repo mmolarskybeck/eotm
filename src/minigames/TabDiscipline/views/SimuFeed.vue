@@ -10,7 +10,7 @@
           :class="{ 'new-post-animation': post.isNew }"
           :data-tone="post.tone"
         >
-                    <div class="post-content">{{ post.content }}</div>
+          <div class="post-content">{{ post.content }}</div>
           
           <div class="post-footer">
             <div class="reaction-display">
@@ -304,8 +304,6 @@ const handleUserReaction = (post, emoji) => {
     post.reactions[emoji] = 1
   }
   post.hasUserReacted = true
-  
-  console.log(`User reacted with ${emoji} to post ${post.id}. Current reactions:`, post.reactions)
 }
 
 const showReactionToast = (name, emoji) => {
@@ -352,8 +350,6 @@ const npcReactionEngine = () => {
       
       // Show toast notification
       showReactionToast(reactorName, reactionEmoji)
-      
-      console.log(`NPC ${reactorName} reacted with ${reactionEmoji} to post ${targetPost.id}. Current reactions:`, targetPost.reactions)
     }
   }
   
