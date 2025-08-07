@@ -12,9 +12,9 @@ import { useTabs } from '@/composables/useTabs'
 const { setTabs } = useTabs()
 
 const tabs = [
-  { name: 'TabDisciplineWork', label: 'TAB 1' },
-  { name: 'TabDisciplineFeed', label: 'TAB 2' },
-  { name: 'TabDisciplineHR', label: 'TAB 3' }
+  { name: 'TabDisciplineWork', label: 'SHEETS' },
+  { name: 'TabDisciplineFeed', label: 'FEED' },
+  { name: 'TabDisciplineHR', label: 'PORTAL' }
 ]
 
 onMounted(() => {
@@ -29,9 +29,10 @@ onUnmounted(() => {
 <style scoped>
 .tab-content-pane {
   flex: 1;
-  padding: 1.5rem;
-  /* Background removed - will use the crt-wrapper's background */
   background: transparent;
   overflow-y: auto;
+  min-height: 400px; /* Ensure minimum height for visual balance */
+  display: flex;
+  flex-direction: column;
 }
 </style>
