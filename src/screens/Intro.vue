@@ -36,7 +36,11 @@ usePageHeader('ORCA.CORP // COACHING PORTAL', '-- ONBOARDING START --')
 // navigation helper
 const router = useRouter()
 function goTo(name) {
-  router.push({ name })
+  if (name === 'tabDiscipline') {
+    router.push('/tab-discipline')
+  } else {
+    router.push({ name })
+  }
 }
 
 // typewriter effect
