@@ -1,168 +1,112 @@
-# EotM repo
+# project-overview.md - Technical Architecture
 
-The repository is a small Vue 3 + Vite project. The README describes it as a starter template for developing with Vue using the `<script setup>` syntax.
-`package.json` lists the core dependencies (`vue`, `vue-router`, `pinia`) and several development tools like ESLint and Prettier.
+_High-level architectural patterns and data flow for Employee of the Month. Explains how systems work together, while README covers what the project is._
 
-## Entry Point
+## Core Application Flow
 
-`src/main.js` creates the Vue app, installs the router and a Pinia store with a persisted‑state plugin, and mounts the app:
+The application follows a linear flow to ensure global systems (state, UI, debug tools) are always available:
 
-```
-import { createApp } from 'vue'
-import App from './App.vue'
-import { router } from './router'
-import './assets/crt.css'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+- **Entry (`main.js`)**: Initializes Vue, Pinia with persistence, and Router. Critical: Pinia persistence enables behavioral data survival across sessions.
+- **Application Shell (`App.vue`)**: Global wrapper providing consistent Layout, Toast notifications, and save/load functions to all children via provide/inject.
+- **Layout (`Layout.vue`)**: Provides CRT aesthetic framework, header/footer, and debug system integration.
+- **Minigame Component**: Self-contained modules that implement behavioral tracking and feed data to the profile system.
 
-const app = createApp(App)
-const pinia = createPinia()
-pinia.use(piniaPluginPersistedstate)
+## State Management Philosophy
 
-app.use(pinia)
-app.use(router)
-app.mount('#app')
-```
+**Pinia with Automatic Persistence**
 
-## Application Shell
+- **Persistence is Critical**: `pinia-plugin-persistedstate` automatically saves entire game store to localStorage. Behavioral data must survive browser sessions for long-term psychological profiling.
+- **Feature-Based Organization**: Store organized by minigame (`quiz`, `powerHour`) plus central `profile` object for cross-minigame correlation.
+- **Actions for Analysis**: Raw player input processed into meaningful behavioral data through Pinia actions (e.g., `recordQuizAnswers` calculates averages and flags patterns).
+- **Cross-Session Continuity**: Player profiles build over multiple sessions, enabling detection of long-term behavioral patterns.
 
-`src/App.vue` acts as the shell. It wraps routed pages in `Layout.vue`, exposes global “save/load/help” functions, manages a toast notification, and provides title/status state for child components:
+## Component Communication Patterns
 
-```
-<Layout :title="pageTitle" :subtitle="pageSubtitle">
-  <router-view />
-</Layout>
-<Transition name="fade">
-  <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
-</Transition>
-```
+**Standard Vue patterns with specific roles:**
 
-Inside the `<script setup>` block, the component provides handlers for saving and loading from `localStorage` and exposes functions via provide so that header buttons can trigger them.
+- **Parent → Child**: Props for direct data passing
+- **Child → Parent**: Emits for event handling
+- **Global App State**: Pinia store for cross-component data (minigame results, behavioral profiles)
+- **Cross-Cutting Concerns**: Provide/inject for app-frame functionality:
+  - **Debug System**: Components inject `addDebugButton` to register controls in global debug area
+  - **Save/Load Functions**: Header buttons trigger functions provided by App.vue
+  - **Page Headers**: `usePageHeader` composable allows any component to set CRT header text
+- **Shared Functionality**: **Composables** abstract reusable logic like navigation (`useNavigation`), header management (`usePageHeader`), and terminal effects (`useTypewriter`). This prevents code duplication across minigames while maintaining consistent behaviors.
 
-## Layout and Global UI
+## Critical Integration Patterns
 
-`src/components/Layout.vue` composes the header (`CrtHeader.vue`), the page content slot, a footer, and some CRT visual effects. It also manages a “debug” mode toggled via a query parameter. When debug mode is on, a DebugArea appears with custom buttons:
+### Behavioral Tracking Architecture
 
-```
-const debug = ref(new URLSearchParams(window.location.search).get('debug') === '1')
-function toggleDebug() {
-const p = new URLSearchParams(window.location.search)
-if (debug.value) p.delete('debug')
-else p.set('debug', '1')
-window.location.search = p.toString()
-}
-```
+**Goal**: Unified system for capturing player behavioral patterns across all minigames.
 
-Debug buttons can be registered by child components using the `addDebugButton` function provided here. For example, the Quiz screen adds buttons when running in development mode.
+**Current Implementation**: Timer-based tracking in Quiz.vue (hesitation detection, timeout behavior).
 
-## Routing
+**Target Pattern**:
 
-`src/router/index.js` defines three routes: an intro screen, a quiz, and a placeholder “Power Hour” screen:
+- Single `trackBehavior(action, context)` function called from all minigames
+- Events stored in Pinia with timestamp, minigame ID, session context
+- Enables cross-minigame behavioral correlation (e.g., "does Quiz hesitation predict PowerHour burnout?")
+- Behavioral data feeds into 5-profile classification system
 
-```
-export const router = createRouter({
-history: createWebHistory(),
-routes: [
-{ path: '/', name: 'intro', component: Intro },
-{ path: '/quiz', name: 'quiz', component: Quiz },
-{ path: '/power-hour', name: 'powerHour', component: PowerHour },
-// …
-],
-})
-```
+### CoSy Commentary System
 
-## State Management
+**Evolution from Static to Dynamic**:
 
-The Pinia store (`useGameStore.js`) tracks quiz answers and whether the user was flagged. It can persist its state thanks to the Pinia persisted-state plugin:
+- **Phase 1 (Current)**: Hard-coded responses in Vue templates based on state conditions (`v-if="flagged"`)
+- **Phase 2 (Target)**: `useCoSy` composable sends behavioral context to GPT API, receives contextually-aware corporate responses
+- **Fallback Strategy**: Static responses when API unavailable, ensuring core experience always works
 
-```
-export const useGameStore = defineStore('game', {
-state: () => ({
-quiz: {
-answers: [],
-average: null,
-allOnes: false,
-flagged: false,
-completedAt: null,
-},
-}),
-actions: {
-recordQuizAnswers(answersArray) {
-const avg = answersArray.reduce((a, b) => a + b, 0) / answersArray.length
-this.quiz.answers = answersArray
-this.quiz.average = avg
-this.quiz.allOnes = answersArray.every((v) => v === 1)
-this.quiz.flagged = avg < 3 && !this.quiz.allOnes
-this.quiz.completedAt = Date.now()
-},
-resetQuiz() {
-this.quiz = {
-answers: [],
-average: null,
-allOnes: false,
-flagged: false,
-completedAt: null,
-}
-},
-},
-persist: true,
-})
-```
+### Profile Classification Integration
 
-## Screens
+**Silent Psychological Profiling**:
 
-`Intro.vue` shows a typewriter greeting and links to the mini‑games. It uses a helper to set the page header on mount.
+- Behavioral events from all minigames feed into profile scoring algorithm
+- 5 profile types (Model Adjacent, Observation Type B, etc.) calculated from cross-minigame patterns
+- Profile affects narrative branching, environmental changes, CoSy commentary tone
+- Player never explicitly told their profile - system observes silently
 
-`Quiz.vue` implements a multi-step quiz with inactivity timers, dynamic warnings, and summary logic. It registers debug buttons when in development mode.
+## Self-Containment Architecture
 
-`PowerHour.vue` is currently a stub screen with minimal content.
+**Minigame Design Principles**:
 
-## Styling
+- Each minigame is self-contained Vue component in `/src/minigames/`
+- Complex minigames have sub-component architecture (TabDiscipline demonstrates this with Post.vue, SimuFeed.vue, WorkTask.vue, etc.)
+- All minigames implement standard behavioral tracking hooks
+- Shared logic abstracted to composables (`useNavigation`, `usePageHeader`, `useTypewriter`) rather than duplicated
+- Minigames register own debug controls when in development mode
 
-`src/assets/crt.css` defines the “CRT terminal” look via custom CSS variables and lots of styling, including a debug area and toast notifications:
+**Sub-Component Strategy**: Complex minigames like TabDiscipline break functionality into focused components - feed simulation, individual posts, work tasks, utility tabs. This pattern enables reusable behavioral tracking at granular levels.
 
-```
-:root {
---green: #00ff88;
---orange: #ffa500;
---red: #ff0033;
---white: #ffffff;
---bg: #000;
-/_ ... _/
-}
-```
+## Development Systems
 
-The debug area style is defined near the end:
+### Debug Architecture
 
-```
-#debug-area {
-max-width: 800px;
-margin: 1rem auto;
-display: flex;
-gap: 1ch;
-justify-content: center;
-font-size: 0.75em;
-color: var(--white);
-text-shadow: 0 0 1px var(--white), 0 0 2px var(--white);
-}
-```
+- **Activation**: `?debug=1` URL parameter shows DebugArea component
+- **Registration**: Minigames use `addDebugButton` via provide/inject to register custom controls
+- **Scope**: Debug tools available in development mode, hidden in production
+- **Purpose**: Skip to end states, manipulate behavioral data, test edge cases
 
-## Development Hints
+### Performance Considerations
 
-The .vscode/extensions.json file lists recommended VS Code extensions, including Vue/Volar support, ESLint, and Prettier.
+- **Lazy Loading**: Minigames loaded on-demand via async components for smaller initial bundle
+- **State Throttling**: Rapid behavioral events (mouse movement, typing) batched before Pinia commits to prevent localStorage thrashing
+- **Memory Management**: Behavioral event buffers cleared after profile calculations to prevent memory growth
 
-ESLint and Prettier are configured in `eslint.config.js` and `.prettierrc`, enforcing coding style.
+### CRT Aesthetic System
 
-## What to Explore Next
+- **Global Styling**: `/src/assets/crt.css` provides terminal look via CSS custom properties
+- **Consistency**: All components inherit CRT aesthetic without individual styling
+- **Performance**: CSS-based effects optimized for smooth animations without JavaScript overhead
 
-Vue Router Navigation – Look into how the router handles navigation between screens and how query parameters are used for debug mode.
+## Integration Readiness
 
-Pinia and Persisted State – Examine how the store persists quiz data across refreshes via pinia-plugin-persistedstate.
+**Current State**: Core Vue architecture complete, Quiz.vue demonstrates full behavioral tracking pattern.
 
-Composition API Patterns – The app uses Vue 3’s `<script setup>` and composition functions (e.g., `usePageHeader`, `useNavigation`); learning more about these patterns will help you extend the app.
+**Next Integration Points**:
 
-Styling & Effects – crt.css implements the retro “CRT” look. Understanding those CSS utilities can help you adjust the visual design.
+- PowerHour Vue migration (complex state management test case)
+- Cross-minigame behavioral correlation algorithm implementation
+- GPT API integration for dynamic CoSy responses
+- Profile-based environmental changes (UI modifications based on player classification)
 
-Debug Tools – Components can register development-only debug buttons. Exploring this pattern could be useful when adding new minigames or diagnostics.
-
-Overall, this codebase is a straightforward example of a Vue 3 single-page application using Vite, Pinia, Vue Router, and custom composables. Studying its router setup, store logic, and use of Vue’s provide/inject features provides a good foundation for building more complex features.
+**Architecture Validation**: Each new minigame should test the behavioral tracking patterns and confirm data flows correctly to profile system.

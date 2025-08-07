@@ -7,14 +7,14 @@
 
     <!-- Back button -->
     <div class="minigame-list">
-      <button class="action-primary" @click="goBack">‹‹ Back to Menu</button>
+      <button class="btn ascii" @click="goBack">‹‹ Back to Menu</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { usePageHeader } from '../composables/usePageHeader.js';
-import { useNavigation } from '../composables/useNavigation.js';
+import { usePageHeader } from '@/composables/usePageHeader.js';
+import { useNavigation } from '@/composables/useNavigation.js';
 
 // 1) Set this page’s header:
 usePageHeader('ORCA.CORP // POWER HOUR', '-- PRODUCTIVITY MODULE --');

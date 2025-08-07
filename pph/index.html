@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productivity Power Hour</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="sidebar">
+      <div class="sidebar-title">Productivity Power Hour</div>
+      <div class="sidebar-buttons">
+        <button onclick="resetGame()">🔄 Restart</button>
+        <!-- somewhere in your sidebar markup -->
+        <button style="font-size: 0.7em; opacity: 0.4" onclick="debugPod()">
+          ⚙️ Dev: Enter Pod
+        </button>
+        <!-- NEW: Jump straight to end‐game -->
+        <button style="font-size: 0.7em; opacity: 0.4" onclick="debugEnd()">
+          ⚙️ Dev: End Screen
+        </button>
+      </div>
+    </div>
+
+    <div id="content-wrapper">
+      <div id="main-content">
+        <div id="dashboard">
+          <div id="status"></div>
+          <div id="progress"></div>
+        </div>
+        <div id="feed"></div>
+      </div>
+      <div id="wellness-pod" style="display: none">
+        <h2>🛌 CoSy Wellness Pod</h2>
+        <p>Quick check-in: Which hobby helps you de-stress?</p>
+        <button id="wellness-opt1">A) A walk in nature</button>
+        <button id="wellness-opt2">B) Binge-watching cat videos</button>
+      </div>
+    </div>
+
+    <!-- Single module entrypoint for Vite -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

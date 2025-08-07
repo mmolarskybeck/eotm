@@ -86,10 +86,10 @@
 <script setup>
 import { useGameStore } from '@/stores/useGameStore.js'
 const game = useGameStore()
-import { usePageHeader } from '../composables/usePageHeader.js'
+import { usePageHeader } from '@/composables/usePageHeader.js'
 import { ref, computed, onMounted, onBeforeUnmount, inject, nextTick } from 'vue'
-import { useNavigation } from '../composables/useNavigation.js'
-import { typeTextWithCursor } from '../composables/useTypewriter.js'
+import { useNavigation } from '@/composables/useNavigation.js'
+import { typeTextWithCursor } from '@/composables/useTypewriter.js'
 
 usePageHeader('ORCA.CORP // SELF-CHECK-IN', '-- CONFIDENTIAL ASSESSMENT --')
 

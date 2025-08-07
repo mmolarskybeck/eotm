@@ -1,0 +1,432 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inconsolata&family=Source+Code+Pro&display=swap');
+
+body {
+  background: #000;
+  color: #f0f0f0;
+  font-family: 'Fira Code', monospace;
+  margin: 0;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 180px;
+  height: 100vh;
+  background-color: #000;
+  color: #7aff7a;
+  font-family: 'Fira Code', monospace;
+  padding: 2em 1em;
+  border-right: 2px solid #333;
+  box-shadow: 3px 0 0 #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  z-index: 1;
+}
+
+.sidebar-title {
+  font-weight: bold;
+  font-size: 1.4em;
+  margin-bottom: 2em;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #7aff7a;
+  text-shadow: 0 0 2px #00ffcc, 0 0 6px #00ffcc, 0 0 10px #00ffaa;
+}
+
+.sidebar-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.sidebar-buttons button {
+  background: #000;
+  color: #7aff7a;
+  border: 1px solid #7aff7a;
+  padding: 0.5em;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85em;
+  transition: background 0.2s, border 0.2s;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-buttons button:hover {
+  background: #111;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}
+
+#content-wrapper {
+  margin-left: 200px;
+  padding: 2em;
+  display: flex;
+  justify-content: center;
+}
+
+#main-content {
+  max-width: 1000px;
+  width: 100%;
+}
+
+/* Dashboard */
+#dashboard #status > div {
+  margin: 0.1em 0;
+}
+#dashboard #progress {
+  margin-top: 0.3em;
+}
+#dashboard #progress h4 {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Task Feed */
+#feed {
+  display: grid;
+  gap: 1em;
+  grid-template-columns: 1fr; /* mobile: 1 column */
+}
+
+/* two columns once you have room for two cards */
+@media (min-width: 500px) {
+  #feed {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* four columns once you have room for four cards */
+@media (min-width: 1000px) {
+  #feed {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Ticket Cards */
+.retro-window.ticket-card {
+  flex: 1 1 200px; /* base width 200px, but free to grow/shrink */
+  display: flex;
+  flex-direction: column; /* stack header/body/actions vertically */
+  background: #000;
+  border: 1px solid #333;
+  box-shadow: 3px 3px 0 #444;
+  color: #f0f0f0;
+  justify-content: space-between;
+  overflow: visible;
+}
+
+.ticket-card.collapsing {
+  animation: retroCollapse 0.4s ease-out forwards;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+@keyframes retroCollapse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    height: auto;
+    margin-bottom: 1em;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(0);
+    height: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+}
+/* Window Header */
+.window-header {
+  background: #111;
+  color: #7aff7a;
+  padding: 4px 8px;
+  font-weight: bold;
+  font-size: 0.85em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  box-shadow: inset 0 -1px 0 #000;
+}
+.window-title {
+  font-weight: bold;
+}
+.close-button {
+  background: #000;
+  color: #f0f0f0;
+  border: 1px solid #555;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.close-button:hover {
+  background: #181818;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}
+
+/* Card Body */
+.retro-window.ticket-card .window-body {
+  flex: 1; /* take up all leftover space */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.window-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  padding: 10px;
+}
+.card-step {
+  font-size: 1.2em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.card-track {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+  color: #7aff7a;
+}
+.card-title {
+  font-size: 0.85em;
+  color: #bbb;
+  font-style: italic;
+  text-transform: uppercase;
+  margin-bottom: 0.6em;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 0.5em;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.actions button {
+  background: #111;
+  color: #7aff7a;
+  border: 1px solid #7aff7a;
+  padding: 0.25em 0.75em;
+  font-size: 0.85em;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.07);
+}
+.actions button:hover {
+  background: #181818;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}
+.actions button:active,
+.close-button:active {
+  transform: scale(0.98);
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.15);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9998; /* just below modal-wrapper (z-index: 9999) */
+  font-family: 'Fira Code', monospace;
+}
+
+.modal-position {
+  position: fixed;
+  top: 25%;
+  left: calc(50% + 120px);
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.modal-wrapper {
+  background: #000;
+  border: 2px solid #7aff7a;
+  box-shadow: 0 0 10px #7aff7a88;
+  width: 400px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  animation: modalPopIn 0.3s ease-out forwards;
+}
+
+.modal-window {
+  display: flex;
+  flex-direction: column;
+  color: #f0f0f0;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: #111;
+  color: #7aff7a;
+  padding: 0.5em 1em;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+.modal-close {
+  background: transparent;
+  border: 1px solid #7aff7a;
+  color: #7aff7a;
+  padding: 0.2em 0.5em;
+  font-size: 1em;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.modal-close:hover {
+  background: #181818;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}
+
+.modal-body {
+  background: #000;
+  padding: 1.2em;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5em 1em;
+  background: #111;
+  border-top: 1px solid #333;
+}
+
+.modal-footer button {
+  background: #111;
+  color: #7aff7a;
+  border: 1px solid #7aff7a;
+  padding: 0.4em 1em;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9em;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.07);
+}
+
+.modal-footer button:hover {
+  background: #181818;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-wrapper.collapsing {
+  animation: retroCollapse 0.4s ease-out forwards;
+  /* Remove transform-origin: top; */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.modal-footer button:active,
+.modal-close:active {
+  transform: scale(0.98);
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, 0.15);
+  border: 1px inset #7aff7a;
+}
+
+/* Wellness Pod */
+/* ========================================
+   Wellness Pod takes over the content area
+   ======================================== */
+#content-wrapper.pod-active {
+  /* keep the sidebar, but make wrapper display block */
+  display: block;
+}
+/* hide everything except #wellness-pod when pod-active */
+#content-wrapper.pod-active > #main-content,
+#content-wrapper.pod-active > #end-screen {
+  display: none !important;
+}
+/* show the pod full-width */
+#content-wrapper.pod-active > #wellness-pod {
+  display: block !important;
+  width: 100%;
+  max-width: 1000px; /* match your usual main-content */
+  margin: 0 auto;
+}
+
+/* End Screen Overrides */
+#end-screen {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2em;
+  background: #000;
+  color: #f0f0f0;
+  font-family: 'Fira Code', monospace;
+}
+#end-screen h1,
+#end-screen h2,
+#end-screen h3 {
+  text-align: center;
+  margin: 0.5em 0;
+}
+.score-breakdown p,
+.evaluation-summary p {
+  margin: 0.5em 0;
+  line-height: 1.4;
+}
+.score-breakdown hr {
+  border-color: #333;
+  margin: 1em 0;
+}
+.end-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 2em;
+}
+.end-buttons button {
+  background: #111;
+  color: #7aff7a;
+  border: 1px solid #7aff7a;
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+.end-buttons button:hover {
+  background: #111;
+  border: 1px inset #7aff7a;
+  outline: 1px dotted #7aff7a;
+  outline-offset: -4px;
+}

@@ -1,106 +1,148 @@
-# 🏢 Employee of the Month (Web Build)
+# 🏢 Employee of the Month
 
-A retrofuturistic, darkly comedic workplace simulator built with Vue 3 and Vite. Players navigate a procedural office environment through interactive fiction, subtle puzzles, and quietly tracking systems.
+Vue 3 + Vite + Pinia workplace simulator with psychological profiling systems.
 
-This version is web-first. Electron wrapping is deferred until packaging.
+## 🚀 Quick Start
 
-## 🎯 Project Goals
+```bash
+npm install
+npm run dev
+```
 
-- Deliver a polished single-player experience with psychological depth.
-- Blend narrative branching (via Ink.js) with task-based minigames.
-- Profile players silently across behavioral archetypes (e.g. Model Adjacent, Unassigned).
-- Build rapidly using web technologies (Vue 3 + Vite + Pinia).
-- Integrate calls to OpenAI’s GPT API to "voice" the role of CoSy (the Coaching System), an in-game fictive AI survelling players.
-- Package for desktop (Steam, itch.io) using Electron **at the end of development**.
+**Main entry point**: `src/main.js` → `src/App.vue` → `src/router/index.js`
 
 ## 📁 Project Structure
 
 ```
 .
 ├── README.md
-├── eslint.config.js
-├── index.html
-├── package-lock.json
-├── package.json
-├── src
-│   ├── App.vue
-│   ├── assets
-│   │   └── crt.css
-│   ├── components
-│   │   ├── CrtFooter.vue
-│   │   ├── CrtHeader.vue
-│   │   ├── DebugArea.vue
-│   │   └── Layout.vue
-│   ├── composables
-│   │   ├── useNavigation.js
-│   │   ├── usePageHeader.js
-│   │   └── useTypewriter.js
-│   ├── main.js
-│   ├── router
-│   │   └── index.js
-│   ├── screens
-│   │   ├── Intro.vue
-│   │   ├── PowerHour.vue
-│   │   └── Quiz.vue
-│   └── stores
-│   └── useGameStore.js
-└── vite.config.js
-
-8 directories, 22 files
+├── pph/                         # 🚨 Power Hour game (awaiting Vue migration)
+├── devnotes/                    # Development documentation
+│   ├── core.md                  # Essential context for AI development
+│   ├── project-overview.md      # Technical architecture patterns
+│   ├── minigame-architecture.md # Standard patterns for building minigames
+│   ├── behavioral-systems.md    # Player profiling implementation
+│   ├── api-integration.md       # GPT API & narrative system integration
+|   ├── vision-doc.md            # Game concept and design overview
+│   └── vue-migration.md         # Converting standalone JS to Vue
+└── src/
+    ├── assets/                  # Global styles (crt.css)
+    ├── components/              # UI framework (CRT aesthetic, layout, debug)
+    ├── composables/             # Shared Vue logic (navigation, headers, typewriter)
+    ├── minigames/               # Self-contained interactive modules
+    │   ├── Quiz/Quiz.vue        # ✅ Complete
+    │   ├── PowerHour/           # 🔄 Needs Vue migration
+    │   └── TabDiscipline/       # 🔄 Multi-component in development
+    ├── router/index.js          # Vue Router configuration
+    ├── screens/Intro.vue        # Top-level views (not minigames)
+    ├── stores/useGameStore.js   # Pinia state (behavioral data, profiles)
+    ├── App.vue                  # Main application shell
+    └── main.js                  # Application entry point
 ```
 
-## 🧠 Behavioral System
+## 📋 Implementation Status
 
-Player decisions are passively tracked and categorized into one of five types:
+### ✅ Completed
 
-- **Model Adjacent** – eerily perfect, hyper-compliant
-- **Observation Type B** – quiet, detached, easily ignored
-- **Unresolved Integrator** – reflective but not assimilated
-- **Low Reliability** – visibly erratic, still readable
-- **Unassigned** – unclassifiable, resistant, possibly dangerous
+- **Personal Effectiveness Self-Assessment** - Full Vue component with behavioral timing
+- **Centering Women** - Spatial puzzle (needs level expansion)
+- **Core Architecture** - Vue 3 + Pinia store + CRT aesthetic + debug system
 
-These profiles influence room access, narrative branches, system tone, and glitch outcomes.
+### 🔄 In Development
 
-## 🧪 Technologies
+- **Productivity Power Hour** - Complex card management (Vue migration needed)
+- **Tab Discipline Protocol** - Multi-tab attention testing
+- **Redline Relay** - Stakeholder communication (by Bea)
+- **Printer Panic** - Logic puzzle (by Bea)
 
-- Vue 3 (`<script setup>`, Composition API)
-- Vite (build tool)
-- Pinia (state management)
-- Ink.js (interactive narrative engine)
-- GSAP (animation/composables)
-- OpenAI GPT API (optional content generator)
-- LocalStorage (offline save/load system)
+### ❌ Not Yet Implemented
 
-## 🛣️ Routes
+- Cross-minigame behavioral profiling algorithm
+- GPT API integration for dynamic responses
+- Narrative branching system (Ink.js or custom Vue)
 
-- `/story/:nodeId` – narrative passages (Ink)
-- `/minigame/:slug` – puzzle modules
+## 📚 Documentation Guide
 
-## 💾 State
+**For AI agents and developers: Read the relevant guide in `devnotes/` before making changes.**
 
-All gameplay state is stored via `useGameStore.js`, with a `saveState`/`loadState` action bound to `localStorage`.
+### Essential Reading
 
-## 🛠️ Dev Notes
+- **`vision-doc.md`** - Game concept, narrative goals, design philosophy
+- **`devnotes/core.md`** - Project constraints, CoSy voice, surveillance illusion
+- **`devnotes/project-overview.md`** - Technical architecture patterns
 
-### Install Dependencies
+### Development Guides
 
-```
-bash
-npm install
-```
+- **`devnotes/minigame-architecture.md`** - How to build minigames (study Quiz.vue)
+- **`devnotes/behavioral-systems.md`** - Implementing player profiling
+- **`devnotes/api-integration.md`** - GPT integration and narrative systems
+- **`devnotes/vue-migration.md`** - Converting standalone JS to Vue
 
-### Start dev server
+## 🔧 Technical Architecture
 
 ```
+src/
+├── minigames/           # Self-contained Vue components ("workplace modules")
+├── stores/             # Pinia state (behavioral data, game progress)
+├── composables/        # Shared Vue logic (navigation, headers, typewriter)
+├── components/         # UI framework (CRT aesthetic, layout, debug)
+└── router/             # Vue Router (minigame routing)
+```
+
+**Key Patterns:**
+
+- All minigames use `<script setup>` Vue 3 composition API
+- Behavioral tracking via `useGameStore()` Pinia store
+- CRT terminal aesthetic via `src/assets/crt.css`
+- Debug mode via `?debug=1` URL parameter
+
+## 🎯 Current Development Priorities
+
+1. **Complete Vue migration** of Power Hour minigame
+2. **Implement behavioral profiling** algorithm across minigames
+3. **Add GPT API integration** for dynamic CoSy responses
+4. **Build narrative system** (Ink.js or custom Vue branching)
+
+## 🛠️ Development Commands
+
+```bash
+# Development
 npm run dev
-```
 
-### Build for production
-
-```
+# Build for production
 npm run build
+
+# Linting
+npm run lint
+
+# Enable debug mode
+# Add ?debug=1 to URL for debug controls
 ```
 
-### Electron Packaging (Final Phase)
+## 🤖 For AI Agents
 
-Electron will be added post-M7 to wrap the final build and produce desktop installers via `electron-builder`.
+**When adding features:**
+
+1. Read `devnotes/vision-doc.md` for game concept
+2. Check `devnotes/core.md` for design constraints
+3. Follow patterns from `devnotes/minigame-architecture.md`
+4. Implement behavioral tracking per `devnotes/behavioral-systems.md`
+
+**When debugging:**
+
+- Use `?debug=1` URL parameter for debug controls
+- Check `src/stores/useGameStore.js` for state issues
+- Preserve corporate aesthetic in `src/assets/crt.css`
+
+**Current unknowns needing implementation:**
+
+- Behavioral profiling algorithms (see `devnotes/behavioral-systems.md`)
+- GPT API patterns (see `devnotes/api-integration.md`)
+- Narrative system choice (see `devnotes/api-integration.md`)
+
+## ⚠️ Important Constraints
+
+- **Corporate training illusion** - everything must feel like legitimate workplace software
+- **Silent surveillance** - players never know they're being profiled
+- **Graceful degradation** - core experience works without API calls
+- **Web-first development** - Electron packaging at end of development

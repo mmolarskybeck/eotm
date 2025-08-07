@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Power Hour</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/game.js"></script>
+
+<div id="sidebar">
+<div class="sidebar-title">Productivity Power Hour</div>
+<div class="sidebar-buttons">
+<button>💾 Saves</button>
+<button>🔄 Restart</button>
+</div>
+</div>
+
+</div>
+
+<div id="content-wrapper">
+<div id="main-content">
+<div id="dashboard">
+<div id="status">
+<div>Burnout: ░░░░░░░░░░ 0/10</div>
+<div>Actions Left: 25</div>
+</div>
+<div id="progress">
+<div>Initiative Progress:</div>
+<p>None started yet. Please remember that the Power Hour has begun.</p>
+</div>
+</div>
+
+<!-- FEED -->
+
+<div id="feed">
+  <div class="retro-window ticket-card">
+    <div class="window-header">
+      <span class="window-title">Task Ticket</span>
+      <button class="close-button" onclick="collapseCard(this)">✕</button>
+    </div>
+    <div class="window-body">
+      <div class="card-step">Step 1</div>
+      <div class="card-track">Backlogged Emails</div>
+      <div class="card-title">Inbox Zeroing</div>
+      <div class="actions">
+        <button onclick="collapseCard(this)">Execute</button>
+        <button onclick="collapseCard(this)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="retro-window ticket-card">
+    <div class="window-header">
+      <span class="window-title">Task Ticket</span>
+      <button class="close-button" onclick="collapseCard(this)">✕</button>
+    </div>
+    <div class="window-body">
+      <div class="card-step">Step 2</div>
+      <div class="card-track">Project Tracker Maintenance</div>
+      <div class="card-title">Assign Ticket Owner</div>
+      <div class="actions">
+        <button onclick="collapseCard(this)">Execute</button>
+        <button onclick="collapseCard(this)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="retro-window ticket-card">
+    <div class="window-header">
+      <span class="window-title">Task Ticket</span>
+      <button class="close-button" onclick="collapseCard(this)">✕</button>
+    </div>
+    <div class="window-body">
+      <div class="card-step">Step 3</div>
+      <div class="card-track">Client Gratitude Outreach</div>
+      <div class="card-title">Scheduled Delivery Setup</div>
+      <div class="actions">
+        <button onclick="collapseCard(this)">Execute</button>
+        <button onclick="collapseCard(this)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="retro-window ticket-card">
+    <div class="window-header">
+      <span class="window-title">Task Ticket</span>
+      <button class="close-button" onclick="collapseCard(this)">✕</button>
+    </div>
+    <div class="window-body">
+      <div class="card-step">Step 4</div>
+      <div class="card-track">Facilities Work Order Requests</div>
+      <div class="card-title">Follow-Up Ping</div>
+      <div class="actions">
+        <button onclick="collapseCard(this)">Execute</button>
+        <button onclick="collapseCard(this)">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- More static cards can be duplicated below -->
+</div>
+</div>
+</div>
+
+<!-- Place modal here -->
+<div class="modal-overlay">
+<div class="modal-position">
+  <div class="modal-wrapper">
+    <div class="modal-window">
+      <div class="modal-header">
+        <span class="modal-title">System Notice</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>⚠️ Burnout threshold approaching.<br>
+        Please hydrate and recalibrate your deliverables.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal()">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div> 
+
+
+  </body>
+</html>
