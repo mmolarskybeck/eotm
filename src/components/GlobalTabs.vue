@@ -76,22 +76,27 @@ const { tabsState } = useTabs()
   background: rgba(0, 0, 0, 0.96);
   color: var(--green);
   text-shadow: 0 0 12px var(--green);
-  box-shadow: inset 0 0 25px rgba(0, 255, 136, 0.2);
+  /* Add a subtle right-side glow to help blend with wrapper */
+  box-shadow: 
+    inset 0 0 25px rgba(0, 255, 136, 0.2),
+    2px 0 8px rgba(0, 255, 136, 0.15);
   filter: brightness(1.1) contrast(1.15);
   z-index: 3;
   
-  /* Extend into the wrapper and use clip-path for perfect edge */
-  width: calc(2.75rem + 4px);
-  margin-right: -4px;
+  /* Extend further into the wrapper for better overlap */
+  width: calc(2.75rem + 6px);
+  margin-right: -6px;
   
-  /* Create a custom shape that flows into the wrapper */
+  /* More precise clip-path that accounts for the border exactly */
   clip-path: polygon(
-    0 0,           /* top-left corner */
-    calc(100% - 4px) 0,    /* top-right, leaving space for wrapper border */
-    calc(100% - 2px) 2px,  /* step in 2px to align with wrapper border */
-    calc(100% - 2px) calc(100% - 2px), /* step down */
-    calc(100% - 4px) 100%, /* bottom-right */
-    0 100%         /* bottom-left corner */
+    0 0,                    /* top-left corner */
+    calc(100% - 6px) 0,     /* top-right, more space */
+    calc(100% - 3px) 1px,   /* step in 3px, offset by 1px */
+    calc(100% - 2px) 2px,   /* step to 2px inside border */
+    calc(100% - 2px) calc(100% - 2px), /* run along inside border */
+    calc(100% - 3px) calc(100% - 1px),  /* step back out */
+    calc(100% - 6px) 100%,  /* bottom-right */
+    0 100%                  /* bottom-left corner */
   );
   
   /* Remove conflicting border styles */
