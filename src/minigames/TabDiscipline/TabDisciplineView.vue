@@ -128,8 +128,6 @@ const tabs = ref([
   padding: 1.5rem;
   background: rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  /* Add left border to define the content area */
-  border-left: 2px solid var(--green);
   margin-left: 40px; /* Adjust for the new tab width */
 }
 
