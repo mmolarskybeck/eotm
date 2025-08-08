@@ -1,7 +1,10 @@
 <template>
-  <Layout :title="pageTitle" :subtitle="pageSubtitle">
-    <router-view />
-  </Layout>
+  <div class="app-wrapper">
+    <GlobalTabs />
+    <Layout :title="pageTitle" :subtitle="pageSubtitle">
+      <router-view />
+    </Layout>
+  </div>
   <Transition name="fade">
     <div v-if="toastMessage" class="toast">{{ toastMessage }}</div>
   </Transition>
@@ -11,6 +14,7 @@
 import { ref, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Layout from './components/Layout.vue'
+import GlobalTabs from './components/GlobalTabs.vue'
 import { useGameStore } from '@/stores/useGameStore.js'
 
 // —— Router & Store ——
@@ -76,3 +80,9 @@ provide('setTitles', setTitles)
 const statusLevel = ref('white')
 provide('statusLevel', statusLevel)
 </script>
+
+<style scoped>
+.app-wrapper {
+  position: relative;
+}
+</style>
