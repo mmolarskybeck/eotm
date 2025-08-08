@@ -21,19 +21,19 @@ const showMask = computed(() => {
 
 const maskStyle = computed(() => {
   if (activeTabIndex.value < 0) return {}
-  
+
   // Calculate the vertical position based on the active tab
-  const topOffset = 180 + (activeTabIndex.value * tabHeight)
-  
+  const topOffset = 180 + activeTabIndex.value * tabHeight
+
   return {
     top: `${topOffset}px`,
-    height: '90px' // Match tab height
+    height: '90px', // Match tab height
   }
 })
 
 // Update active tab index based on route
 const updateActiveTab = () => {
-  const activeTab = tabsState.tabs.findIndex(tab => tab.name === route.name)
+  const activeTab = tabsState.tabs.findIndex((tab) => tab.name === route.name)
   activeTabIndex.value = activeTab
 }
 

@@ -1,144 +1,290 @@
 <!-- src/components/GlobalTabs.vue -->
 <template>
   <nav v-if="tabsState.isVisible" class="global-tab-container">
-    <router-link
-      v-for="(tab, index) in tabsState.tabs"
-      :key="tab.name"
-      :to="{ name: tab.name }"
-      class="tab"
-      active-class="active"
-      :data-tab-index="index"
-    >
-      <span class="tab-label">{{ tab.label }}</span>
-    </router-link>
+    <div class="tab-list" :style="gliderStyle" :data-active-route="route.name">
+      <div class="tab-glider"></div>
+      <router-link
+        v-for="(tab, index) in tabsState.tabs"
+        :key="tab.name"
+        :to="{ name: tab.name }"
+        class="tab-button"
+        active-class="active"
+        :data-tab-index="index"
+      >
+        <span class="tab-label">{{ tab.label }}</span>
+      </router-link>
+    </div>
   </nav>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useTabs } from '@/composables/useTabs'
+import { useRoute } from 'vue-router'
 
 const { tabsState } = useTabs()
+const route = useRoute()
+
+const gliderStyle = computed(() => {
+  const activeIndex = tabsState.tabs.findIndex((tab) => tab.name === route.name)
+  const tabHeight = 88 // Height per tab
+  const tabGap = 4 // Gap between tabs
+  const totalOffset = activeIndex >= 0 ? activeIndex * (tabHeight + tabGap) : 0
+
+  return {
+    '--active-tab-index': activeIndex >= 0 ? activeIndex : 0,
+    '--tab-height': `${tabHeight}px`,
+    '--glider-offset': `${totalOffset}px`,
+    '--active-route-name': route.name || 'none',
+  }
+})
 </script>
 
 <style scoped>
+/* CSS custom properties for precise control */
 .global-tab-container {
-  position: absolute;
-  /* Aligns the container relative to the .crt-wrapper.
-     50% = center of screen
-     400px = half of .crt-wrapper's max-width
-     2.75rem = width of the tab itself */
-  left: calc(50% - 400px - 2.75rem);
-  top: 180px; /* Vertical alignment */
-  display: flex;
-  flex-direction: column;
-  width: 2.75rem;
-  gap: 2px;
-  z-index: 2; /* Sits above the wrapper but below other effects */
+  --tab-width: 44px;
+  --tab-height: 88px;
+  --tab-border-width: 2px;
+  --tab-border-radius: 8px;
+  --tab-color: var(--green);
+  --tab-bg-base: rgba(0, 0, 0, 0.9);
+  --tab-bg-hover: rgba(0, 255, 0, 0.1);
+  --tab-bg-active: rgba(0, 0, 0, 0.96);
+  --glider-bg: linear-gradient(
+    90deg,
+    rgba(0, 255, 136, 0.2) 0%,
+    rgba(0, 255, 136, 0.5) 30%,
+    rgba(0, 255, 136, 0.7) 50%,
+    rgba(0, 255, 136, 0.5) 70%,
+    rgba(0, 255, 136, 0.2) 100%
+  );
 }
 
-.tab {
+/* Position the tab container to align with CRT wrapper left edge */
+.global-tab-container {
+  position: absolute;
+  /* Align to left edge of .crt-wrapper:
+     50% - center of viewport
+     400px - half of .crt-wrapper max-width (800px)
+     var(--tab-width) - width of tab to position outside */
+  left: calc(50% - 400px - var(--tab-width));
+  top: 180px;
+  z-index: 2;
+}
+
+/* Flexbox container for tabs with spacing */
+.tab-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: var(--tab-width);
+  gap: 4px; /* Add spacing between tabs */
+}
+
+/* Individual tab styling with precise border management */
+.tab-button {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90px;
-  padding: 1.5rem 0.75rem;
+
+  /* Exact sizing */
+  width: var(--tab-width);
+  height: var(--tab-height); /* Positioning - overlap right border with CRT wrapper */
+  margin-right: calc(-1 * var(--tab-border-width));
+  margin-bottom: 0; /* Remove border collapse since we have gap now */
+
+  /* Text styling */
   text-decoration: none;
-  color: var(--green);
-  font-family: var(--font-crt);
+  color: var(--tab-color);
+  font-family: var(--font-ui);
   font-size: 0.65rem;
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid var(--green);
-  /* Rounded edges on the left (exterior) side */
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-  transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  writing-mode: vertical-rl;
+  text-shadow: 0 0 4px rgba(0, 255, 136, 0.3);
+
+  /* Vertical text layout */
+  writing-mode: vertical-lr;
   text-orientation: mixed;
-  text-shadow: var(--tw-shadow-base);
-  box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.1);
-  /* Overlap the wrapper by the width of its border to hide it */
-  margin-right: -2px;
+
+  /* Visual styling */
+  background: var(--tab-bg-base);
+  border: var(--tab-border-width) solid var(--tab-color);
+  border-right: none; /* Open side toward CRT wrapper */
+  border-radius: var(--tab-border-radius) 0 0 var(--tab-border-radius);
+
+  /* CRT glow effect on borders to match crt-wrapper */
+  box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.1), 0 0 4px rgba(0, 255, 136, 0.3),
+    0 0 8px rgba(0, 255, 136, 0.15);
+  transition: all 0.2s ease;
+
+  /* Normal z-index */
+  z-index: 2;
 }
 
-.tab:hover {
-  background: rgba(0, 255, 0, 0.1);
-  color: var(--green);
-  text-shadow: 0 0 8px var(--green);
-  box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.2), 0 0 8px rgba(0, 255, 136, 0.3);
+/* Hover state */
+.tab-button:hover {
+  background: var(--tab-bg-hover);
+  color: var(--tab-color);
+  text-shadow: 0 0 8px var(--tab-color);
+  box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.2), 0 0 8px rgba(0, 255, 136, 0.4);
+  transform: translateX(-1px); /* Subtle hover effect */
 }
 
-/* Clean, simple active state with clip-path */
-.tab.active {
-  background: rgba(0, 0, 0, 0.96);
-  color: var(--green);
-  text-shadow: 0 0 12px var(--green);
-  /* Add a subtle right-side glow to help blend with wrapper */
-  box-shadow: 
-    inset 0 0 25px rgba(0, 255, 136, 0.2),
-    2px 0 8px rgba(0, 255, 136, 0.15);
-  filter: brightness(1.1) contrast(1.15);
-  z-index: 3;
-  
-  /* Extend further into the wrapper for better overlap */
-  width: calc(2.75rem + 6px);
-  margin-right: -6px;
-  
-  /* More precise clip-path that accounts for the border exactly */
-  clip-path: polygon(
-    0 0,                    /* top-left corner */
-    calc(100% - 6px) 0,     /* top-right, more space */
-    calc(100% - 3px) 1px,   /* step in 3px, offset by 1px */
-    calc(100% - 2px) 2px,   /* step to 2px inside border */
-    calc(100% - 2px) calc(100% - 2px), /* run along inside border */
-    calc(100% - 3px) calc(100% - 1px),  /* step back out */
-    calc(100% - 6px) 100%,  /* bottom-right */
-    0 100%                  /* bottom-left corner */
-  );
-  
-  /* Remove conflicting border styles */
-  border-right: none;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+/* Active state - back to normal styling */
+.tab-button.active {
+  background: var(--tab-bg-active);
+  color: var(--tab-color);
+  text-shadow: 0 0 12px var(--tab-color);
+  box-shadow: inset 0 0 25px rgba(0, 255, 136, 0.3);
+  filter: brightness(1.1);
 }
 
+/* Text rotation for bottom-to-top reading */
 .tab-label {
   display: block;
   position: relative;
-  z-index: 3;
   white-space: nowrap;
+  transform: rotate(180deg);
+  z-index: 1;
 }
 
-/* Responsive adjustments for smaller screens */
+/* Animated glider - thin vertical line at right edge of tabs */
+.tab-glider {
+  position: absolute;
+  top: 0;
+  /* Position at the right edge of the tabs (which connects to CRT) */
+  right: calc(-1 * var(--tab-border-width));
+  width: 4px; /* Thin vertical line */
+  height: var(--tab-height);
+
+  /* Default gradient (fallback) */
+  background: linear-gradient(
+    180deg,
+    rgba(0, 255, 136, 0.8) 0%,
+    rgba(0, 255, 200, 1) 50%,
+    rgba(0, 255, 136, 0.8) 100%
+  );
+
+  /* Rounded ends */
+  border-radius: 2px;
+
+  /* Default glow effect */
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.8), 0 0 16px rgba(0, 255, 136, 0.4),
+    inset 0 0 4px rgba(255, 255, 255, 0.3);
+
+  /* Animation */
+  transform: translateY(var(--glider-offset));
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layer above tabs so it's visible */
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Colorful glider styles for each tab */
+
+/* SHEETS tab - Green tones */
+.tab-list[data-active-route='TabDisciplineWork'] .tab-glider {
+  background: linear-gradient(
+    180deg,
+    #00ff88 0%,
+    #00ffcc 20%,
+    #00ff88 40%,
+    #22ffaa 60%,
+    #00ff88 80%,
+    #00ffcc 100%
+  );
+  box-shadow: 0 0 12px rgba(0, 255, 136, 1), 0 0 24px rgba(0, 255, 136, 0.6),
+    0 0 36px rgba(0, 255, 136, 0.3), inset 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+/* FEED tab - Orange/Yellow tones */
+.tab-list[data-active-route='TabDisciplineFeed'] .tab-glider {
+  background: linear-gradient(
+    180deg,
+    #ffaa00 0%,
+    #ff8800 20%,
+    #ffcc44 40%,
+    #ff9922 60%,
+    #ffaa00 80%,
+    #ff7700 100%
+  );
+  box-shadow: 0 0 12px rgba(255, 170, 0, 1), 0 0 24px rgba(255, 136, 0, 0.6),
+    0 0 36px rgba(255, 119, 0, 0.3), inset 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+/* PORTAL tab - White/Blue tones */
+.tab-list[data-active-route='TabDisciplineHR'] .tab-glider {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ccddff 20%,
+    #ffffff 40%,
+    #aaccff 60%,
+    #ffffff 80%,
+    #bbddff 100%
+  );
+  box-shadow: 0 0 12px rgba(255, 255, 255, 1), 0 0 24px rgba(204, 221, 255, 0.8),
+    0 0 36px rgba(170, 204, 255, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive layout for smaller screens */
 @media (max-width: 900px) {
   .global-tab-container {
-    /* Switch to horizontal layout above the CRT wrapper */
-    flex-direction: row;
-    top: 10px; /* Position above the main box */
+    /* Switch to horizontal layout above the CRT */
     left: 50%;
+    top: 140px;
     transform: translateX(-50%);
     width: auto;
-    max-width: 400px;
-    margin-right: 0; /* Reset margin for horizontal layout */
+    max-width: min(400px, 80vw);
   }
 
-  .tab {
+  .tab-list {
+    flex-direction: row;
+    width: auto;
+    height: var(--tab-width);
+  }
+
+  .tab-button {
+    /* Horizontal orientation */
     writing-mode: horizontal-tb;
     text-orientation: initial;
-    min-height: auto;
-    padding: 0.5rem 1rem;
-    border-right: 2px solid var(--green);
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    width: auto;
+    min-width: 80px;
+    height: var(--tab-width);
+
+    /* Remove margins since we have gap in horizontal mode too */
     margin-right: 0;
-    margin-bottom: -2px; /* Overlap bottom border */
+    margin-bottom: calc(-1 * var(--tab-border-width));
+    margin-left: 0;
+
+    /* Adjust borders for top connection */
+    border-right: var(--tab-border-width) solid var(--tab-color);
+    border-bottom: none;
+    border-radius: var(--tab-border-radius) var(--tab-border-radius) 0 0;
   }
 
-  .tab.active {
-    border-bottom-color: transparent;
+  .tab-button:last-child {
+    margin-left: 0;
+  }
+
+  .tab-label {
+    transform: none; /* No rotation needed horizontally */
+  }
+
+  .tab-glider {
+    /* Horizontal line at bottom for mobile */
+    top: auto;
+    bottom: calc(-1 * var(--tab-border-width));
+    right: auto;
+    left: 0;
+    width: 80px; /* Match min-width of tabs */
+    height: 4px; /* Thin horizontal line */
+    border-radius: 2px;
+    transform: translateX(calc(var(--active-tab-index) * (80px + 4px))); /* Account for gap */
   }
 }
 </style>
